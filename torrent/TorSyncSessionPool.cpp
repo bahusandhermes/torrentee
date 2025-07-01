@@ -40,7 +40,8 @@ TorSyncSessionPool::TorSyncSessionPool(const InitData& idata)
     settings.set_int(lt::settings_pack::active_downloads, -1);
     settings.set_int(lt::settings_pack::active_seeds, -1);
     settings.set_int(lt::settings_pack::dht_announce_interval, 10);
-    settings.set_str(lt::settings_pack::dht_bootstrap_nodes, "router.bittorrent.com:6881,dht.transmissionbt.com:6881,router.bt.ouinet.work:6881,router.utorrent.com,router.bittorrent.com:6881");
+    settings.set_str(lt::settings_pack::dht_bootstrap_nodes,
+        "router.bittorrent.com:6881,dht.transmissionbt.com:6881,router.bt.ouinet.work:6881,router.utorrent.com:6881");
 
     settings.set_int(lt::settings_pack::local_service_announce_interval, 10);
     settings.set_bool(lt::settings_pack::close_redundant_connections, false);
@@ -76,6 +77,15 @@ TorSyncSessionPool::TorSyncSessionPool(const InitData& idata)
     lt::session_params params(settings);
 
     _session = std::make_shared<lt::session>(params);
+
+    if (_idata.global)
+    {
+        _session->start_dht();
+        for (const auto& [host, port] : constants::DEFAULT_DHT_ROUTERS)
+        {
+            _session->add_dht_router(host.c_str(), port);
+        }
+    }
     _worker = std::thread{ &TorSyncSessionPool::Worker, this };
 }
 
