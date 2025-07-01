@@ -57,9 +57,9 @@ TorSyncSessionPool::TorSyncSessionPool(const InitData& idata)
     settings.set_int(lt::settings_pack::seed_choking_algorithm, lt::settings_pack::round_robin);
     settings.set_bool(lt::settings_pack::enable_outgoing_utp, true); // Disable uTP
     settings.set_bool(lt::settings_pack::enable_incoming_utp, true); // Disable uTP
-    settings.set_int(lt::settings_pack::request_timeout, 10); // seconds
-    settings.set_int(lt::settings_pack::piece_timeout, 5); // seconds
-    settings.set_int(lt::settings_pack::peer_timeout, 30); // seconds
+    settings.set_int(lt::settings_pack::request_timeout, 20); // seconds
+    settings.set_int(lt::settings_pack::piece_timeout, 10); // seconds
+    settings.set_int(lt::settings_pack::peer_timeout, 60); // seconds
     settings.set_int(lt::settings_pack::request_queue_time, 5); // seconds
     settings.set_int(lt::settings_pack::max_out_request_queue, 1500);
     settings.set_int(lt::settings_pack::max_allowed_in_request_queue, 4000);

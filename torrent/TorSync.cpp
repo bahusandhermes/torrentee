@@ -128,6 +128,9 @@ bool TorSync::Serve(const std::wstring& path, const std::wstring& torrentPath, s
 
     atp.save_path = utils::converters::from_u8string(parentPath.generic_u8string());
     atp.flags |= lt::torrent_flags::seed_mode;
+    atp.trackers.insert(atp.trackers.end(),
+        constants::DEFAULT_TRACKERS.begin(),
+        constants::DEFAULT_TRACKERS.end());
 
     _handle = _session->add_torrent(atp, ec);
 
@@ -179,6 +182,9 @@ bool TorSync::ServeTorrent(const std::wstring& torrentPath, const std::wstring& 
 
     atp.save_path = utils::converters::from_u8string(dp.parent_path().generic_u8string());
     atp.flags |= lt::torrent_flags::seed_mode;
+    atp.trackers.insert(atp.trackers.end(),
+        constants::DEFAULT_TRACKERS.begin(),
+        constants::DEFAULT_TRACKERS.end());
 
     _handle = _session->add_torrent(atp, ec);
 
@@ -234,6 +240,9 @@ bool TorSync::Fetch(const std::string& hash, const std::wstring& dest)
 
     lt::add_torrent_params atp;
     atp.info_hashes.v1 = h.value();
+    atp.trackers.insert(atp.trackers.end(),
+        constants::DEFAULT_TRACKERS.begin(),
+        constants::DEFAULT_TRACKERS.end());
 
     std::filesystem::path fetchPath = std::filesystem::absolute(dest);
     std::error_code ec;
@@ -276,6 +285,8 @@ bool TorSync::Fetch(const std::string& hash, const std::wstring& dest)
     }
 
     SetHash(hash);
+    _handle.force_dht_announce();
+    _handle.force_reannounce();
     PLOGI << "Fetching hash = " << hash << " dest = " << dest << "...";
 
     return true;
