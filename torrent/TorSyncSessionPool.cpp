@@ -158,7 +158,15 @@ void TorSyncSessionPool::Worker()
                         }
                         else
                         {
-                            PLOGI << "Num peers " << torSync->_handle.status().num_peers;
+                            int peers = torSync->_handle.status().num_peers;
+                            PLOGI << "Num peers " << peers;
+
+                            if (peers == 0 && status.state != lt::torrent_status::finished &&
+                                status.state != lt::torrent_status::seeding)
+                            {
+                                torSync->_handle.force_dht_announce();
+                                torSync->_handle.force_reannounce();
+                            }
 
                             if (torSync->GetState() == status.state) continue;
 
