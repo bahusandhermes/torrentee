@@ -6,7 +6,7 @@ This project includes a simple Selenium script that gathers availability informa
 
 - Python 3.8 or later
 - Google Chrome or Chromium browser installed on your system
-- Chrome WebDriver (automatically handled by `webdriver-manager`)
+- Chrome WebDriver installed on your system
 
 ## Installation
 
@@ -26,7 +26,14 @@ pip install -r requirements.txt
 ## Usage
 
 1. Add product URLs to `urls.txt`, one URL per line.
-2. Run the script:
+2. (Optional) specify custom paths to Chrome and ChromeDriver if they are not on your `PATH`:
+
+```bash
+export CHROME_BINARY=/path/to/chrome
+export CHROMEDRIVER_PATH=/path/to/chromedriver
+```
+
+3. Run the script:
 
 ```bash
 python parse_vkusvill_selenium.py

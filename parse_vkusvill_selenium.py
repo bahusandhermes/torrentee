@@ -8,7 +8,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+import os
+import shutil
 
 URLS_FILE = "urls.txt"
 
@@ -23,17 +24,29 @@ def setup_driver() -> webdriver.Chrome:
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    service = Service(ChromeDriverManager().install())
+
+    chrome_binary = os.environ.get("CHROME_BINARY")
+    if chrome_binary:
+        options.binary_location = chrome_binary
+
+    driver_path = os.environ.get("CHROMEDRIVER_PATH") or shutil.which("chromedriver")
+    service = Service(driver_path) if driver_path else Service()
+
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
 
 def open_availability_panel(driver: webdriver.Chrome) -> None:
-    button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "button.js-vv23-product-goto-rests"))
-    )
+    """Open the availability panel if the button is present."""
+    try:
+        button = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button.js-vv23-product-goto-rests"))
+        )
+    except Exception as exc:
+        raise RuntimeError("Не удалось найти кнопку просмотра остатков") from exc
+
     button.click()
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "div.VV21_MapPanelShop__Col"))
     )
 
