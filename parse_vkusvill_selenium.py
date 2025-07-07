@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import ElementClickInterceptedException
 import os
 import shutil
 
@@ -45,7 +46,13 @@ def open_availability_panel(driver: webdriver.Chrome) -> None:
     except Exception as exc:
         raise RuntimeError("Не удалось найти кнопку просмотра остатков") from exc
 
-    button.click()
+    # Scroll to the button to ensure it is not covered by the header
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button)
+    try:
+        button.click()
+    except ElementClickInterceptedException:
+        # Some overlays (e.g. cart menu) may intercept the click
+        driver.execute_script("arguments[0].click();", button)
     WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "div.VV21_MapPanelShop__Col"))
     )
