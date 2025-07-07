@@ -5,6 +5,7 @@ from typing import List, Tuple
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -31,7 +32,9 @@ def setup_driver() -> webdriver.Chrome:
         options.binary_location = chrome_binary
 
     driver_path = os.environ.get("CHROMEDRIVER_PATH") or shutil.which("chromedriver")
-    service = Service(driver_path) if driver_path else Service()
+    if not driver_path:
+        driver_path = ChromeDriverManager().install()
+    service = Service(driver_path)
 
     driver = webdriver.Chrome(service=service, options=options)
     return driver
