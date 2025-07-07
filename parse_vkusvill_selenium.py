@@ -1,6 +1,7 @@
 import re
 import time
 from typing import List, Tuple
+import argparse
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -20,9 +21,10 @@ def read_urls(path: str) -> List[str]:
         return [line.strip() for line in f if line.strip()]
 
 
-def setup_driver() -> webdriver.Chrome:
+def setup_driver(headless: bool = False) -> webdriver.Chrome:
     options = Options()
-    options.add_argument("--headless=new")
+    if headless:
+        options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
@@ -94,8 +96,17 @@ def summarize(driver: webdriver.Chrome) -> Tuple[int, int]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Parse Vkusvill availability")
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+        default=os.environ.get("HEADLESS") == "1",
+        help="Run Chrome in headless mode. Can also be enabled with HEADLESS=1"
+    )
+    args = parser.parse_args()
+
     urls = read_urls(URLS_FILE)
-    driver = setup_driver()
+    driver = setup_driver(headless=args.headless)
     try:
         for url in urls:
             driver.get(url)

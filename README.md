@@ -39,7 +39,7 @@ export CHROMEDRIVER_PATH=/path/to/chromedriver
 python parse_vkusvill_selenium.py
 ```
 
-The script will open each URL in a headless Chrome session, gather availability information for each store, and print the results in the terminal.
+The script opens Chrome in a visible window by default. To run headlessly, set the `HEADLESS=1` environment variable or pass the `--headless` flag. It will gather availability information for each store and print the results in the terminal.
 
 ## Files
 
